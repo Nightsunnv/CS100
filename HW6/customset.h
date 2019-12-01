@@ -1,35 +1,38 @@
-#include <map>
-#include <vector>
+#ifndef CUSTOMSET_H
+#define CUSTOMSET_H
+#include <utility>
+#include <string>
+#include <memory>
+#include <random>
+#include <time.h>
+#include <algorithm>
+#include<iterator>
 #include <iostream>
+#include <vector>
+#include <list>
 using namespace std;
 template <typename T>
 class CustomSet
 {
 public:
-	vector<T>cset;
 	// Constructors and destructor:
 	CustomSet() {
-		vector<T>cset;
+		m_size=0;
+		cset.clear();
 	};
 	// Default constructor
 
 	CustomSet(const CustomSet& other) {
-		cset.insert(cset.end(), other.cset.begin(), other.cset.end());
+		m_size=other.size();
+		cset=other.cset;
 	};
 	// Copy constructor. Should construct a copy of "other".
 
 	CustomSet(T arr[], int size) {
-		bool judge = true;
-		for (int fff = 0; fff < size; fff++) {
-			for (int eee = 0; eee < fff; eee++) {
-				if (arr[eee] == arr[fff]) {
-					judge = false;
-					break;
-				}
-			}
-			if (judge) {
-				cset.push_back(arr[fff]);
-			}
+		cset.clear();
+		m_size=0;
+        for(int i=0;i<size;i++){
+        	add(arr[i]);
 		}
 	};
 	// Constructor using an array. 
@@ -40,32 +43,31 @@ public:
 	// Destructor. Pay attention to memory leaks!
 
 // Other member functions:
-	int size() {
-		return cset.size();
+	int size() const{
+		return m_size;
 	};
 	// Returns the size of the set.
 
 	bool add(const T& item) {
-	    //typename vector<T>::iterator iter=find(cset.begin(),cset.end(),item);
-		//if(iter==cset.end())return false;
-		//else{
-			cset.push_back(item);
-			return true;
-		//}
+        if(lookFor(item))return false;
+        cset.push_back(item);
+        m_size++;
+		sortSet();
+        return true;
 	};
 	// If "item" is already in the set, return false. 
 	// Otherwise, add it to the set and return true.
-    bool lookFor(const int item){
-    	for (vector<int>::iterator iter = cset.begin(); iter != cset.end(); iter++) {
+    bool lookFor(const T& item){
+    	for (typename vector<T>::iterator iter = cset.begin(); iter != cset.end(); ++iter) {
 			if (*iter == item)return true;
 		}
 		return false;
 	}
 	T* find(const T& item) {
-		for (typename vector<T>::iterator iter = cset.begin(); iter != cset.end(); iter++) {
-			if (*iter == item)return iter;
+		for (typename vector<T>::iterator iter = cset.begin(); iter != cset.end(); ++iter) {
+			if (*iter == item)return &(*iter);
 		}
-		return NULL;
+		return nullptr;
 	};
 
 	// If an object in the set equals "item", return a pointer to it.
@@ -75,6 +77,7 @@ public:
 		for (typename vector<T>::iterator iter = cset.begin(); iter != cset.end(); ++iter) {
 			if (*iter == item) {
 				cset.erase(iter);
+				m_size--;
 				return true;
 			}
 		}
@@ -83,7 +86,20 @@ public:
 	// If "item" is not in the set, return false.
 	// Otherwise, erase it from the set and return true.
 
-	CustomSet intersection(const CustomSet& other) {
+/*	CustomSet intersection(const CustomSet& other) {
+		CustomSet intersectiono;int i;
+		for (i = 0; i < m_size; i++) {
+			for (int j = 0; j < other.size(); j++) {
+				if (cset[i] == other.cset[j]) {
+					intersectiono.add(other.cset[j]);
+				}
+				continue;
+			}
+		}
+		return intersectiono;
+	};
+*/
+CustomSet intersection(const CustomSet& other) {
 		CustomSet intersectiono;unsigned int i;
 		for (i = 0; i < this->cset.size(); i++) {
 			for (unsigned int j = 0; j < other.cset.size(); j++) {
@@ -99,15 +115,20 @@ public:
 	// If there is no intersection, just return an empty set.
 
 	void sortSet() {
-		sort(cset.begin(), cset.end());
+		sort(cset.begin(), cset.end());return;
 	};
 	// This function sorts the objects in the set in ascending order.
 	// Directly using (std::)sort is enough, if you are using an STL container.
 
 	void printSet() {
-		cout << "{";
-		for (unsigned int i = 0; i < cset.size() - 1; i++)cout << cset[i] << ", ";
-		cout << cset[cset.size() - 1] << "}" << endl;
+		if(m_size==0){
+			cout<<"{}"<<endl;
+			return;
+		}
+		cout << "{"<<cset[0];
+		for(int i=1;i<m_size;i++)cout<<", "<<cset[i];
+		cout<<"}"<<endl;
+		return;
 	};
 	// This function prints the set, seperating elements by { , , , }.
 	// It's safe to assume that it supports operator<< of ostream (cout).
@@ -124,18 +145,18 @@ public:
 	};
 	CustomSet operator+ (const CustomSet& that) {
 		CustomSet oo(*this);
-		for (int i = 0; i < that.cset.size(); i++) {
-			oo.add(that.cset[i]);
+		for (typename vector<T>::const_iterator iter = that.cset.begin(); iter != that.cset.end(); ++iter) {
+			oo.add(*iter);
 		}
 		return oo;
 	};
-	CustomSet operator+= (const T& item) {
+	CustomSet& operator+= (const T& item) {
 		add(item);
 		return *this;
 	};
-	CustomSet operator+= (const CustomSet& that) {
-		for (int i = 0; i < that.cset.size(); i++) {
-			add(that.cset[i]);
+	CustomSet& operator+= (const CustomSet& that) {
+		for (typename vector<T>::const_iterator iter = that.cset.begin(); iter != that.cset.end(); ++iter) {
+			add(*iter);
 		}
 		return *this;
 	};
@@ -153,18 +174,18 @@ public:
 	};
 	CustomSet operator- (const CustomSet& that) {
 		CustomSet oo(*this);
-		for (int i = 0; i < that.cset.size(); i++) {
-			oo.erase(that.cset[i]);
+		for (typename vector<T>::const_iterator iter = that.cset.begin(); iter != that.cset.end(); ++iter) {
+			oo.erase(*iter);
 		}
 		return oo;
 	};
-	CustomSet operator-= (const T& item) {
+	CustomSet& operator-= (const T& item) {
 		erase(item);
 		return *this;
 	};
-	CustomSet operator-= (const CustomSet that) {
-		for (int i = 0; i < that.cset.size(); i++) {
-			erase(that.cset[i]);
+	CustomSet& operator-= (const CustomSet& that) {
+		for (typename vector<T>::const_iterator iter = that.cset.begin(); iter != that.cset.end(); ++iter) {
+			erase(*iter);
 		}
 		return *this;
 	};
@@ -176,8 +197,14 @@ public:
 	// Try to figure out on your own!
 
 
-	CustomSet<pair<T, T> > operator* (const CustomSet& that) {
-		return make_pair<this, that>;
+	CustomSet<pair<T, T>> operator* (const CustomSet& that) {
+		CustomSet<pair<T,T>> a;
+		for(int m=0;m<m_size;m++){
+			for(int n=0;n<that.m_size;n++){
+				a.add(make_pair(cset[m],that.cset[n]));
+			}
+		}
+		return a;
 	};
 	// This function returns the Cartesian product of two sets (*this and that).
 	// The Cartesian product of two sets is the set of all ordered pairs that satisfy:
@@ -186,5 +213,6 @@ public:
 	// The (std::)pair (in header <utility>) helps representing the object in it.
 	// If you have any question with Cartesian products or std::pair, just look up on Internet!
 
+    vector<T>cset;int m_size; 
 };
-
+#endif

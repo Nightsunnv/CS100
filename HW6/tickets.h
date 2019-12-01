@@ -1,6 +1,5 @@
 #ifndef tickets_h
 #define tickets_h
-#include "customset.h"
 class LotteryTicket{
 public:
 	LotteryTicket();

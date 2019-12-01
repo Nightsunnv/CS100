@@ -1,8 +1,7 @@
-#include "lotterystation.h"
 LotteryStation::	LotteryStation() {
 		s_round = 0;
 	};
-	~LotteryStation(){
+LotteryStation::	~LotteryStation(){
 	};
 
 	LotteryTicket* LotteryStation::buy(CustomSet<int> numbers, unsigned int tickettype) {

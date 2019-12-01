@@ -1,7 +1,5 @@
 #ifndef LOTTERYSTATION_H
 #define LOTTERYSTATION_H
-#include "tickets.h"
-#include "customset.h"
 class LotteryStation{
 public:
 	LotteryStation();

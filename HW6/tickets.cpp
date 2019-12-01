@@ -25,8 +25,8 @@ long long zuhe(int m,int n){
 }
 
 LotteryTicket::LotteryTicket(){};
-LotteryTicket::LotteryTicket(const CustomSet<int>& numbers, int round);
-virtual LotteryTicket::~LotteryTicket(){
+LotteryTicket::LotteryTicket(const CustomSet<int>& numbers, int round){};
+LotteryTicket::~LotteryTicket(){
 	};
 void LotteryTicket::setRound(const int r) {
 	m_round = r;
@@ -34,7 +34,7 @@ void LotteryTicket::setRound(const int r) {
 int LotteryTicket::getRound() {
 	return m_round;
 };
-int Lotteryticket::gettype(){
+int LotteryTicket::gettype(){
 	return m_type;
 }
 int LotteryTicket::getCost() {
@@ -46,7 +46,7 @@ int LotteryTicket::getTicketType() {
 void LotteryTicket::setCost(const int& cost) {
 	m_cost = cost;
 };
-virtual int LotteryTicket::claimPrize(const CustomSet<int>& prizeNumbers, int round){};
+int LotteryTicket::claimPrize(const CustomSet<int>& prizeNumbers, int round){};
 
 
 Lotto7Ticket::	Lotto7Ticket() {
@@ -94,7 +94,7 @@ Lotto6Ticket::	Lotto6Ticket() {
 //			if (!m_numbers.find(bb))m_numbers.cset.push_back(bb);
 //		}
 	};
-	Lotto6Ticket(const CustomSet<int>& numbers, int round) {
+Lotto6Ticket::	Lotto6Ticket(const CustomSet<int>& numbers, int round) {
 		m_type=6;
 		for (unsigned int i = 0; i < numbers.cset.size(); i++) {
 			m_numbers.cset.push_back(numbers.cset[i]);
